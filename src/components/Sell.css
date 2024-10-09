@@ -1,0 +1,41 @@
+/* Sell Section Styles */
+.sell-section {
+    max-width: 600px; /* Adjust this value to reduce the size of the box */
+    margin: 0 auto; /* Center the box */
+    padding: 2rem; /* Add some padding */
+    background: linear-gradient(to right, #b0a99f, #e6d4b8); /* Updated gradient */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow effect */
+    text-align: left;
+}
+
+/* Input styles */
+input, textarea {
+    padding: 0.75rem; /* Inner padding for input fields */
+    border-radius: 5px; /* Rounded corners */
+    border: 1px solid #ccc; /* Border style */
+    font-size: 1rem; /* Font size */
+}
+
+/* Button styles for forms */
+button[type="submit"] {
+    background-color: #007bff; /* Primary button color */
+    color: white; /* Text color */
+    border: none; /* No border */
+    padding: 0.75rem; /* Inner padding */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer on hover */
+    transition: background-color 0.3s; /* Transition for hover effect */
+}
+
+/* Button hover effect */
+button[type="submit"]:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Media Queries for Mobile Responsiveness */
+@media (max-width: 768px) {
+    .sell-section {
+        padding: 1rem; /* Less padding on smaller screens */
+    }
+}
