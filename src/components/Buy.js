@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Buy.css';
 
-const Buy = ({ products, addToCart }) => {
+const Buy = ({ products, addToCart, setSellingProducts }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
@@ -42,17 +42,23 @@ const Buy = ({ products, addToCart }) => {
         setSelectedProduct(null);
     };
 
-    // Placeholder function to simulate purchase logic
-    const handleConfirmPurchase = () => {
+    const handleConfirmPurchase = async () => {
         if (selectedProduct) {
-            // Simulate a purchase by logging to the console
-            console.log(`Purchased: ${selectedProduct.name} for $${selectedProduct.price}`);
+            try {
+                // Send a request to mark the product as sold
+                await fetch(`http://localhost:5000/api/products/${selectedProduct._id}/sell`, {
+                    method: 'PUT',
+                });
 
-            // Here you would integrate actual payment processing logic
-            // For example, calling a payment API or navigating to a payment page
-
-            // Close the modal after confirming the purchase
-            closeModal();
+                // Log purchase
+                console.log(`Purchased: ${selectedProduct.name} for $${selectedProduct.price}`);
+                setSellingProducts(prev => prev.map(prod => 
+                    prod._id === selectedProduct._id ? { ...prod, status: 'Sold' } : prod
+                ));
+                closeModal();
+            } catch (error) {
+                console.error('Error confirming purchase:', error);
+            }
         }
     };
 
@@ -86,7 +92,7 @@ const Buy = ({ products, addToCart }) => {
                         <div className="product-grid">
                             {categorizedProducts[category].map((product) => (
                                 <div key={product.id} className="product-card">
-                                    <img src={product.imageUrl} alt={product.name} className="product-image" />
+                                    <img src={product.image} alt={product.name} className="product-image" />
                                     <h3 className="product-name">{product.name}</h3>
                                     <p className="product-price">Price: ${product.price}</p>
                                     <p className="product-description">{product.description}</p>
