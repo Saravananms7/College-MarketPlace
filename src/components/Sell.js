@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './Sell.css';
+import { useAuth } from '../AuthContext';
 
-const Sell = ({ sellingProducts, setSellingProducts, sellerId }) => {
+const Sell = ({ sellingProducts, setSellingProducts }) => {
+    const { sellerId } = useAuth();
+
+    console.log("sellerId in Sell component:", sellerId);
+
     const [sellData, setSellData] = useState({
         productName: '',
         category: '',
@@ -11,13 +16,12 @@ const Sell = ({ sellingProducts, setSellingProducts, sellerId }) => {
         contactNumber: ''
     });
 
-    const [previewImage, setPreviewImage] = useState(null); // For image preview
-    const [error, setError] = useState(null); // For error handling
-    const [loading, setLoading] = useState(false); // For loading state
-    const [success, setSuccess] = useState(null); // For success message
+    const [previewImage, setPreviewImage] = useState(null);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(null);
 
     useEffect(() => {
-        // Cleanup preview URL when image changes
         return () => {
             if (previewImage) {
                 URL.revokeObjectURL(previewImage);
@@ -28,59 +32,72 @@ const Sell = ({ sellingProducts, setSellingProducts, sellerId }) => {
     const handleSellChange = (e) => {
         const { name, value } = e.target;
         setSellData({ ...sellData, [name]: value });
-        
-        // Update preview if image is a URL
+
         if (name === 'image' && value) {
-            setPreviewImage(value); // Use the URL as the preview
+            setPreviewImage(value);
+        }
+    };
+
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            setSellData({ ...sellData, image: file });
+            setPreviewImage(imageUrl);
         }
     };
 
     const handleSellSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true); // Start loading
-        setError(null); // Reset error state
-        setSuccess(null); // Reset success state
-
+        setLoading(true);
+        setError(null);
+        setSuccess(null);
+    
+        if (!sellerId) {
+            setError('You must be logged in to sell products.');
+            setLoading(false);
+            return;
+        }
+    
         try {
-            // Validate price is a positive number
-            if (parseFloat(sellData.price) <= 0) {
+            const priceValue = parseFloat(sellData.price);
+            if (isNaN(priceValue) || priceValue <= 0) {
                 setError('Price must be a positive number.');
                 return;
             }
+    
+            const formData = new FormData();
+            formData.append('name', sellData.productName);
+            formData.append('category', sellData.category);
+            formData.append('price', priceValue);
+            
+            // Append image only if it exists
+            if (sellData.image instanceof File) {
+                formData.append('image', sellData.image);
+            }
+    
+            formData.append('description', sellData.description);
+            formData.append('contactNumber', sellData.contactNumber);
+            formData.append('seller', sellerId);
 
-            // Validate image URL format (more detailed regex check)
-            const validImageUrlPattern = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp))/i; // Check for valid image URL format
-            if (!validImageUrlPattern.test(sellData.image)) {
-                setError('Invalid image URL');
-                return;
+            // Log the formData
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
             }
 
-            // Submit product details with the image URL
             const response = await fetch('http://localhost:5000/api/products', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: sellData.productName,
-                    category: sellData.category,
-                    price: sellData.price,
-                    image: sellData.image, // Use the provided URL directly
-                    description: sellData.description,
-                    contactNumber: sellData.contactNumber,
-                    seller: sellerId,
-                }),
+                body: formData,
             });
-
+    
             if (!response.ok) {
                 throw new Error('Product creation failed');
             }
-
+    
             const newProduct = await response.json();
             setSellingProducts([...sellingProducts, { ...newProduct, status: 'Available' }]);
-            setSuccess('Product added successfully!'); // Set success message
-
-            // Reset form after submission
+            setSuccess('Product added successfully!');
+    
             setSellData({
                 productName: '',
                 category: '',
@@ -90,19 +107,21 @@ const Sell = ({ sellingProducts, setSellingProducts, sellerId }) => {
                 contactNumber: ''
             });
             setPreviewImage(null);
+    
+            setTimeout(() => setSuccess(null), 3000);
         } catch (error) {
             console.error('Error adding product:', error);
             setError(error.message || 'An error occurred while adding the product.');
         } finally {
-            setLoading(false); // End loading
+            setLoading(false);
         }
     };
 
     return (
         <div className="sell-section">
             <h2>Sell Section</h2>
-            {error && <p className="error">{error}</p>} {/* Display error */}
-            {success && <p className="success">{success}</p>} {/* Display success message */}
+            {error && <p className="error">{error}</p>}
+            {success && <p className="success">{success}</p>}
             <form onSubmit={handleSellSubmit}>
                 <input
                     type="text"
@@ -133,30 +152,30 @@ const Sell = ({ sellingProducts, setSellingProducts, sellerId }) => {
                     required
                 />
                 <input
-                    type="text"
+                    type="file"
                     name="image"
-                    value={sellData.image}
-                    onChange={handleSellChange}
-                    placeholder="Image URL"
-                    required
+                    accept="image/*"
+                    onChange={handleImageUpload}
                 />
-                {previewImage && <img src={previewImage} alt="Product Preview" />} {/* Image preview */}
+                {previewImage && <img src={previewImage} alt="Product Preview" />}
                 <textarea
                     name="description"
                     value={sellData.description}
                     onChange={handleSellChange}
-                    placeholder="Description"
+                    placeholder="Product Description"
                     required
-                />
+                ></textarea>
                 <input
-                    type="tel"
+                    type="text"
                     name="contactNumber"
                     value={sellData.contactNumber}
                     onChange={handleSellChange}
                     placeholder="Contact Number"
                     required
                 />
-                <button type="submit" disabled={loading}>{loading ? 'Submitting...' : 'Sell'}</button>
+                <button type="submit" disabled={loading}>
+                    {loading ? 'Adding...' : 'Sell'}
+                </button>
             </form>
         </div>
     );

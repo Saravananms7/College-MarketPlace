@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from './ThemeContext';
+import { useAuth } from '../AuthContext'; // Import useAuth
 import axios from 'axios';
 import './Login.css';
 
 const Login = () => {
     const { darkMode, setDarkMode } = useTheme();
+    const { login } = useAuth(); // Destructure login from AuthContext
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -14,7 +16,6 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Perform simple form validation
         if (email && password) {
             try {
                 const response = await axios.post('http://localhost:5000/api/auth/login', {
@@ -22,16 +23,26 @@ const Login = () => {
                     password
                 });
 
-                // Assuming the response contains user info or token
-                console.log('Login successful:', response.data);
+                // Assuming response contains the user's _id and token
+                const { token, user } = response.data; // Destructure token and user from response
+                console.log('Login successful:', user);
 
-                // Store the token in local storage
-                localStorage.setItem('token', response.data.token);
-                
-                // Redirect to the marketplace
-                navigate('/marketplace');
+                // Check if _id exists in the user object
+                if (user && user._id) {
+                    // Store token in local storage
+                    localStorage.setItem('token', token); // Store the token separately
+
+                    // Set sellerId in AuthContext using the _id field
+                    login(user._id); // Use the _id field as sellerId
+
+                    // Redirect to the marketplace
+                    navigate('/marketplace');
+                } else {
+                    setErrorMessage('Failed to retrieve user ID.');
+                    console.error('User ID (_id) not found in response.');
+                }
             } catch (error) {
-                setErrorMessage('Invalid email or password'); // Set error message if login fails
+                setErrorMessage('Invalid email or password');
                 console.error('Login error:', error);
             }
         } else {
@@ -50,7 +61,7 @@ const Login = () => {
             <div className="overlay"></div>
             <div className="login-container">
                 <h2>Login</h2>
-                {errorMessage && <p className="error-message">{errorMessage}</p>} {/* Display error message */}
+                {errorMessage && <p className="error-message">{errorMessage}</p>}
                 <form onSubmit={handleSubmit}>
                     <div className="login-field">
                         <label>Email:</label>
