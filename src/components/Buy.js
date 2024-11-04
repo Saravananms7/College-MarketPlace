@@ -1,10 +1,36 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Buy.css';
+import { useAuth } from '../AuthContext'; // Import your AuthContext to get sellerId
 
-const Buy = ({ products, addToCart, setSellingProducts }) => {
+const Buy = ({ addToCart, setSellingProducts }) => {
+    const { sellerId } = useAuth(); // Get the sellerId of the logged-in user
+    const [products, setProducts] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                // Fetch products excluding those listed by the logged-in user
+                const response = await fetch(`http://localhost:5000/api/products?sellerId=${sellerId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch products');
+                }
+                const data = await response.json();
+                setProducts(data);
+            } catch (error) {
+                console.error(error);
+                setError(error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, [sellerId]);
 
     const categorizeProducts = (products) => {
         return products.reduce((categories, product) => {
@@ -62,6 +88,9 @@ const Buy = ({ products, addToCart, setSellingProducts }) => {
         }
     };
 
+    if (loading) return <p>Loading products...</p>;
+    if (error) return <p className="error">{error}</p>;
+
     return (
         <div className="buy-section">
             <h2>Buy Section</h2>
@@ -91,7 +120,7 @@ const Buy = ({ products, addToCart, setSellingProducts }) => {
                         <h3 className="category-title">{category}</h3>
                         <div className="product-grid">
                             {categorizedProducts[category].map((product) => (
-                                <div key={product.id} className="product-card">
+                                <div key={product._id} className="product-card">
                                     <img src={product.image} alt={product.name} className="product-image" />
                                     <h3 className="product-name">{product.name}</h3>
                                     <p className="product-price">Price: ${product.price}</p>
