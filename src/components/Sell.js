@@ -6,13 +6,15 @@ const Sell = ({ sellingProducts, setSellingProducts, sellerId }) => {
         productName: '',
         category: '',
         price: '',
-        image: null,
+        image: '',
         description: '',
         contactNumber: ''
     });
 
     const [previewImage, setPreviewImage] = useState(null); // For image preview
     const [error, setError] = useState(null); // For error handling
+    const [loading, setLoading] = useState(false); // For loading state
+    const [success, setSuccess] = useState(null); // For success message
 
     useEffect(() => {
         // Cleanup preview URL when image changes
@@ -24,37 +26,36 @@ const Sell = ({ sellingProducts, setSellingProducts, sellerId }) => {
     }, [previewImage]);
 
     const handleSellChange = (e) => {
-        const { name, value, files } = e.target;
-        if (name === 'image' && files && files.length > 0) {
-            setSellData({ ...sellData, image: files[0] });
-            setPreviewImage(URL.createObjectURL(files[0])); // Generate preview for the image
-        } else {
-            setSellData({ ...sellData, [name]: value });
+        const { name, value } = e.target;
+        setSellData({ ...sellData, [name]: value });
+        
+        // Update preview if image is a URL
+        if (name === 'image' && value) {
+            setPreviewImage(value); // Use the URL as the preview
         }
     };
 
     const handleSellSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true); // Start loading
+        setError(null); // Reset error state
+        setSuccess(null); // Reset success state
+
         try {
-            setError(null); // Reset error state
-
-            // 1. Upload the image first
-            const formData = new FormData();
-            formData.append('image', sellData.image);
-
-            const imageResponse = await fetch('http://localhost:5000/api/upload', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!imageResponse.ok) {
-                throw new Error('Image upload failed');
+            // Validate price is a positive number
+            if (parseFloat(sellData.price) <= 0) {
+                setError('Price must be a positive number.');
+                return;
             }
 
-            const imageData = await imageResponse.json();
-            const imageUrl = imageData.url; // Image URL returned from the backend
+            // Validate image URL format (more detailed regex check)
+            const validImageUrlPattern = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp))/i; // Check for valid image URL format
+            if (!validImageUrlPattern.test(sellData.image)) {
+                setError('Invalid image URL');
+                return;
+            }
 
-            // 2. Submit product details with the image URL
+            // Submit product details with the image URL
             const response = await fetch('http://localhost:5000/api/products', {
                 method: 'POST',
                 headers: {
@@ -64,10 +65,10 @@ const Sell = ({ sellingProducts, setSellingProducts, sellerId }) => {
                     name: sellData.productName,
                     category: sellData.category,
                     price: sellData.price,
-                    image: imageUrl, // Use the image URL from the upload response
+                    image: sellData.image, // Use the provided URL directly
                     description: sellData.description,
                     contactNumber: sellData.contactNumber,
-                    seller: sellerId, // Use the actual seller ID passed as a prop
+                    seller: sellerId,
                 }),
             });
 
@@ -77,14 +78,23 @@ const Sell = ({ sellingProducts, setSellingProducts, sellerId }) => {
 
             const newProduct = await response.json();
             setSellingProducts([...sellingProducts, { ...newProduct, status: 'Available' }]);
+            setSuccess('Product added successfully!'); // Set success message
 
             // Reset form after submission
-            setSellData({ productName: '', category: '', price: '', image: null, description: '', contactNumber: '' });
-            setPreviewImage(null); // Reset image preview
-
+            setSellData({
+                productName: '',
+                category: '',
+                price: '',
+                image: '',
+                description: '',
+                contactNumber: ''
+            });
+            setPreviewImage(null);
         } catch (error) {
             console.error('Error adding product:', error);
-            setError('An error occurred while adding the product.');
+            setError(error.message || 'An error occurred while adding the product.');
+        } finally {
+            setLoading(false); // End loading
         }
     };
 
@@ -92,6 +102,7 @@ const Sell = ({ sellingProducts, setSellingProducts, sellerId }) => {
         <div className="sell-section">
             <h2>Sell Section</h2>
             {error && <p className="error">{error}</p>} {/* Display error */}
+            {success && <p className="success">{success}</p>} {/* Display success message */}
             <form onSubmit={handleSellSubmit}>
                 <input
                     type="text"
@@ -122,10 +133,11 @@ const Sell = ({ sellingProducts, setSellingProducts, sellerId }) => {
                     required
                 />
                 <input
-                    type="file"
-                    accept="image/*"
+                    type="text"
                     name="image"
+                    value={sellData.image}
                     onChange={handleSellChange}
+                    placeholder="Image URL"
                     required
                 />
                 {previewImage && <img src={previewImage} alt="Product Preview" />} {/* Image preview */}
@@ -144,7 +156,7 @@ const Sell = ({ sellingProducts, setSellingProducts, sellerId }) => {
                     placeholder="Contact Number"
                     required
                 />
-                <button type="submit">Sell</button>
+                <button type="submit" disabled={loading}>{loading ? 'Submitting...' : 'Sell'}</button>
             </form>
         </div>
     );
