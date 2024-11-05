@@ -7,8 +7,8 @@
 
 /* Navbar container */
 .navbar {
-    background-color: #4a4a4a; /* Dark grey */
-    padding: 1rem 2rem;
+    background-color: #d90429; /* Red color */
+    padding: 0.75rem 2rem; /* Adjusted padding */
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -16,7 +16,7 @@
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-radius: 0 0 10px 10px; /* Rounded edges at the bottom */
+    border-radius: 0 0 10px 10px;
 }
 
 /* Navbar button styles */
@@ -37,7 +37,7 @@
 /* Hover and focus effects */
 .navbar button:hover,
 .navbar button:focus {
-    background-color: #575757; /* Lighter grey for hover */
+    background-color: #b71c1c; /* Darker red for hover */
     transform: scale(1.05); /* Slight zoom effect */
     transition: background-color 0.2s ease, transform 0.2s ease;
 }
@@ -111,6 +111,7 @@ input, textarea {
     border: 1px solid #ccc; /* Border style */
     font-size: 1rem; /* Font size */
 }
+
 /* Photo upload label styles */
 .photo-upload-label {
     display: flex;
@@ -193,5 +194,21 @@ button[type="submit"]:hover {
         margin-top: 1rem;
         font-weight: 600;
     }
-    
+}
+
+/* Logo container */
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem; /* Reduced padding */
+    background-color: #ffffff;
+    border-bottom: 2px solid #ddd;
+    border-radius: 10px 10px 0 0;
+}
+
+/* Logo image styling */
+.logo {
+    max-width: 120px;
+    height: auto;
 }

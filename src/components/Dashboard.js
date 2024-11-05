@@ -5,6 +5,7 @@ import Sell from './Sell';
 import Cart from './Cart';
 import Status from './Status';
 import Profile from './Profile';
+import logo from './logo.png';
 
 const Dashboard = () => {
     const [activeSection, setActiveSection] = useState('buy');
@@ -23,54 +24,9 @@ const Dashboard = () => {
     const [selectedProduct, setSelectedProduct] = useState(null);
 
     const products = [
-        { 
-            id: 1, 
-            name: 'JavaScript Book', 
-            price: 20, 
-            description: 'Learn JavaScript.', 
-            category: 'Books', 
-            imageUrl: 'https://books.goalkicker.com/JavaScriptBook/JavaScriptGrow.png',
-            contactNumber: '123-456-7890'
-        },
-        { 
-            id: 2, 
-            name: 'Laptop', 
-            price: 500, 
-            description: 'A powerful laptop.', 
-            category: 'Electronics', 
-            imageUrl: 'https://images.pexels.com/photos/7974/pexels-photo.jpg?cs=srgb&dl=pexels-life-of-pix-7974.jpg&fm=jpg',
-            contactNumber: '234-567-8901'
-        },
-        { 
-            id: 3, 
-            name: 'T-Shirt', 
-            price: 15, 
-            description: 'Comfortable cotton t-shirt.', 
-            category: 'Clothing', 
-            imageUrl: 'https://veirdo.in/cdn/shop/files/Artboard8.png?v=1724158576&width=360',
-            contactNumber: '345-678-9012'
-        },
-        { 
-            id: 4, 
-            name: 'Headphones', 
-            price: 50, 
-            description: 'Noise-cancelling headphones.', 
-            category: 'Electronics', 
-            imageUrl: 'https://img.freepik.com/free-photo/pink-headphones-wireless-digital-device_53876-96804.jpg',
-            contactNumber: '456-789-0123'
-        },
-        { 
-            id: 5, 
-            name: 'Pen', 
-            price: 10, 
-            description: 'Ball pen.', 
-            category: 'Others', 
-            imageUrl: 'https://5.imimg.com/data5/SELLER/Default/2020/10/PX/KF/AW/20193325/ink-pen.jpg',
-            contactNumber: '567-890-1234'
-        },
+        // Product details here
     ];
-    
-    // Add product to cart
+
     const addToCart = (product) => {
         const itemToAdd = {
             id: product.id,
@@ -81,13 +37,11 @@ const Dashboard = () => {
         setCartItems((prevItems) => [...prevItems, itemToAdd]);
     };
 
-    // Remove product from cart by index
     const removeItemFromCart = (index) => {
         const updatedCart = cartItems.filter((_, i) => i !== index);
         setCartItems(updatedCart);
     };
 
-    // Clear the entire cart
     const clearCart = () => setCartItems([]);
 
     const handleProfileChange = (e) => {
@@ -105,7 +59,6 @@ const Dashboard = () => {
         setSelectedProduct(null);
     };
 
-    // Placeholder function to simulate purchase logic
     const handleConfirmPurchase = () => {
         if (selectedProduct) {
             console.log(`Purchased: ${selectedProduct.name} for $${selectedProduct.price}`);
@@ -115,6 +68,12 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-container">
+            {/* Logo Section */}
+            <div className="logo-container">
+                <img src={logo} alt="Logo" className="logo" />
+            </div>
+
+            {/* Navigation Bar */}
             <div className="navbar">
                 <button className={activeSection === 'buy' ? 'active' : ''} onClick={() => setActiveSection('buy')}>Buy</button>
                 <button className={activeSection === 'sell' ? 'active' : ''} onClick={() => setActiveSection('sell')}>Sell</button>
@@ -123,6 +82,7 @@ const Dashboard = () => {
                 <button className={activeSection === 'profile' ? 'active' : ''} onClick={() => setActiveSection('profile')}>Profile</button>
             </div>
 
+            {/* Other Sections */}
             <div className="page-design">
                 {activeSection === 'buy' && <Buy products={products} addToCart={addToCart} handleBuyClick={handleBuyClick} />}
                 {activeSection === 'sell' && <Sell sellingProducts={sellingProducts} setSellingProducts={setSellingProducts} />}
@@ -131,7 +91,7 @@ const Dashboard = () => {
                         cartItems={cartItems} 
                         clearCart={clearCart} 
                         removeItemFromCart={removeItemFromCart} 
-                        handleBuyClick={handleBuyClick} // Pass handleBuyClick to Cart
+                        handleBuyClick={handleBuyClick} 
                     />
                 )}
                 {activeSection === 'status' && <Status sellingProducts={sellingProducts} />}
