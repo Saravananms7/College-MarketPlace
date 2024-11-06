@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from './ThemeContext';
-import { useAuth } from '../AuthContext'; // Import useAuth
+import { useAuth } from '../AuthContext';
 import axios from 'axios';
 import './Login.css';
+import logo from './logo.png'; // Import image correctly
 
 const Login = () => {
     const { darkMode, setDarkMode } = useTheme();
-    const { login } = useAuth(); // Destructure login from AuthContext
+    const { login } = useAuth();
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -23,19 +24,12 @@ const Login = () => {
                     password
                 });
 
-                // Assuming response contains the user's _id and token
-                const { token, user } = response.data; // Destructure token and user from response
+                const { token, user } = response.data;
                 console.log('Login successful:', user);
 
-                // Check if _id exists in the user object
                 if (user && user._id) {
-                    // Store token in local storage
-                    localStorage.setItem('token', token); // Store the token separately
-
-                    // Set sellerId in AuthContext using the _id field
-                    login(user._id); // Use the _id field as sellerId
-
-                    // Redirect to the marketplace
+                    localStorage.setItem('token', token);
+                    login(user._id);
                     navigate('/marketplace');
                 } else {
                     setErrorMessage('Failed to retrieve user ID.');
@@ -59,6 +53,11 @@ const Login = () => {
                 </label>
             </div>
             <div className="overlay"></div>
+
+            <div className="header">
+                <img src={logo} alt="Logo" className="logo" /> {/* Corrected image reference */}
+            </div>
+
             <div className="login-container">
                 <h2>Login</h2>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}

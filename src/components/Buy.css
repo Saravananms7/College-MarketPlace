@@ -1,9 +1,12 @@
 /* General styles for the buy section */
 .buy-section {
     font-family: 'Poppins', sans-serif;
-    background-color: #f9f9f9;
+  /*  background-color: #f9f9f9; */
     min-height: 100vh;
     padding: 2rem;
+    background-image: url('https://example.com/bokeh-background.jpg');
+    background-size: cover;
+
 }
 
 /* Search bar styling */

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTheme } from './ThemeContext';
 import axios from 'axios';
 import './Signup.css';
+import logo from './logo.png'; // Import image correctly
 
 const Signup = () => {
     const { darkMode, setDarkMode } = useTheme();
@@ -17,7 +18,6 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Perform simple form validation
         if (name && phone && role && department && email && password) {
             try {
                 const response = await axios.post('http://localhost:5000/api/auth/signup', {
@@ -29,12 +29,9 @@ const Signup = () => {
                     email,
                     password
                 });
-
                 console.log('Signup successful:', response.data);
-                // Optionally, redirect to login or marketplace
-                // navigate('/login');
             } catch (error) {
-                setErrorMessage('Error during signup: ' + error.response.data.message); // Set error message if signup fails
+                setErrorMessage('Error during signup: ' + error.response.data.message);
                 console.error('Signup error:', error);
             }
         } else {
@@ -51,9 +48,14 @@ const Signup = () => {
                 </label>
             </div>
             <div className="overlay"></div>
+            
+            <div className="header">
+                <img src={logo} alt="Logo" className="logo" /> {/* Corrected image reference */}
+            </div>
+
             <div className="signup-container">
                 <h2>Sign Up</h2>
-                {errorMessage && <p className="error-message">{errorMessage}</p>} {/* Display error message */}
+                {errorMessage && <p className="error-message">{errorMessage}</p>}
                 <form onSubmit={handleSubmit}>
                     <div className="signup-field">
                         <label>Name:</label>
@@ -98,7 +100,6 @@ const Signup = () => {
                             <option value="MCA">MCA</option>
                         </select>
                     </div>
-                    {/* Email and Password fields at the end */}
                     <div className="signup-field">
                         <label>Email:</label>
                         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
