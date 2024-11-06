@@ -24,21 +24,23 @@
     border-bottom: 1px solid #ddd;
 }
 
-/* Cart item image */
-.cart-item-image {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border-radius: 5px;
-    margin-right: 1rem;
+/* New wrapper for item details to manage the layout */
+.cart-item-details {
+    flex-grow: 1;
 }
 
 /* Cart item name */
 .cart-item-name {
-    flex-grow: 1;
     font-size: 1rem;
     font-weight: 500;
     color: #333;
+}
+
+/* Cart item description */
+.cart-item-description {
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 0.3rem; /* Small margin between name and description */
 }
 
 /* Remove button for each cart item */
@@ -73,7 +75,7 @@
     background-color: #218838;
 }
 
-/* Add this to your Cart.css */
+/* Buy item button */
 .buy-item-btn {
     background-color: #007bff; /* Bootstrap primary color */
     color: white;

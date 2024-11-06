@@ -5,17 +5,18 @@ import './Profile.css';
 
 const Profile = () => {
     const [profileData, setProfileData] = useState(null);
-    const [profileImage, setProfileImage] = useState('https://via.placeholder.com/150');
     const [isEditing, setIsEditing] = useState(false);
     const [profileUpdated, setProfileUpdated] = useState(false);
-    const [selectedFile, setSelectedFile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     
     // State for dropdowns
-    const roles = ['student', 'faculty']; // Changed to lowercase
+    const roles = ['student', 'faculty'];
     const departments = ['CSE', 'CSE-AI', 'CSE-CY', 'AI-DS', 'ECE', 'EEE', 'ME', 'CE', 'MCA'];
     const years = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+
+    // Default avatar image
+    const defaultAvatar = 'https://m.media-amazon.com/images/I/41jLBhDISxL.jpg';
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -29,16 +30,12 @@ const Profile = () => {
             const source = axios.CancelToken.source();
 
             try {
-                console.log('Fetching profile with token:', token);
                 const response = await axios.get('http://localhost:5000/api/profile', {
                     headers: { Authorization: `Bearer ${token}` },
                     cancelToken: source.token,
                 });
                 
                 setProfileData(response.data);
-                if (response.data.profileImage) {
-                    setProfileImage(response.data.profileImage);
-                }
             } catch (error) {
                 if (axios.isCancel(error)) {
                     console.log('Fetch canceled:', error.message);
@@ -61,31 +58,19 @@ const Profile = () => {
         setProfileData({ ...profileData, [name]: value });
     };
 
-    const handleProfileImageChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            setSelectedFile(e.target.files[0]);
-            setProfileImage(URL.createObjectURL(e.target.files[0]));
-        }
-    };
-
     const handleProfileSubmit = async (e) => {
         e.preventDefault();
     
         const token = localStorage.getItem('token');
         const formData = new FormData();
-        formData.append('name', profileData.name || ''); // Ensure fallback to empty string
+        formData.append('name', profileData.name || '');
         formData.append('email', profileData.email || '');
         formData.append('phone', profileData.phone || '');
-        formData.append('role', profileData.role?.toLowerCase() || ''); // Convert to lowercase
+        formData.append('role', profileData.role?.toLowerCase() || '');
         formData.append('department', profileData.department || '');
-        if (profileData.role === 'student') { // Use lowercase
+        if (profileData.role === 'student') {
             formData.append('year', profileData.year || '');
         }
-        if (selectedFile) {
-            formData.append('profileImage', selectedFile);
-        }
-    
-        console.log('Form Data Before Submission:', Array.from(formData.entries())); // Log form data
     
         try {
             await axios.put('http://localhost:5000/api/profile', formData, {
@@ -103,7 +88,6 @@ const Profile = () => {
             setError('Profile update failed: ' + (error.response?.data?.message || 'Unknown error'));
         }
     };
-    
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p className="error-message">{error}</p>;
@@ -112,18 +96,7 @@ const Profile = () => {
         <div className="profile-section">
             <h2>Profile Section</h2>
             <div className="profile-header">
-                <img src={profileImage} alt="Profile" className="profile-image" />
-                {isEditing && (
-                    <label className="upload-label">
-                        Upload Photo
-                        <input 
-                            type="file" 
-                            accept="image/*" 
-                            onChange={handleProfileImageChange} 
-                            style={{ display: 'none' }} 
-                        />
-                    </label>
-                )}
+                <img src={defaultAvatar} alt="Profile" className="profile-image" />
                 <FaEdit 
                     className="edit-icon" 
                     onClick={() => setIsEditing(!isEditing)} 
@@ -174,12 +147,12 @@ const Profile = () => {
                             <option value="">Select Role</option>
                             {roles.map((role) => (
                                 <option key={role} value={role}>
-                                    {role.charAt(0).toUpperCase() + role.slice(1)} {/* Capitalize display */}
+                                    {role.charAt(0).toUpperCase() + role.slice(1)}
                                 </option>
                             ))}
                         </select>
                     </div>
-                    {profileData.role === 'student' && ( // Use lowercase
+                    {profileData.role === 'student' && (
                         <div>
                             <label>Year:</label>
                             <select 
@@ -220,7 +193,7 @@ const Profile = () => {
                     <p><strong>Name:</strong> {profileData.name}</p>
                     <p><strong>Email:</strong> {profileData.email}</p>
                     <p><strong>Phone:</strong> {profileData.phone}</p>
-                    <p><strong>Role:</strong> {profileData.role.charAt(0).toUpperCase() + profileData.role.slice(1)}</p> {/* Capitalize display */}
+                    <p><strong>Role:</strong> {profileData.role.charAt(0).toUpperCase() + profileData.role.slice(1)}</p>
                     {profileData.role === 'student' && <p><strong>Year:</strong> {profileData.year}</p>}
                     <p><strong>Department:</strong> {profileData.department}</p>
                 </div>

@@ -19,7 +19,7 @@
     justify-content: space-between;
     width: 100%;
     position: relative;
-    background: linear-gradient(to right, #b0a99f, #e6d4b8); /* Gradient applied here */
+    background: linear-gradient(to right, #c6170aa8, #c60404); /* Gradient applied here */
     padding: 1rem;
     border-radius: 10px;
 }
