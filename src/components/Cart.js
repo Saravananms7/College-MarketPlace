@@ -9,8 +9,8 @@ const Cart = ({ cartItems, clearCart, removeItemFromCart, handleBuyClick }) => {
                 <ul className="cart-list">
                     {cartItems.map((item, index) => (
                         <li key={index} className="cart-item">
-                            <img src={item.imageUrl} alt={item.name} className="cart-item-image" />
-                            <span className="cart-item-name">{item.name} - ${item.price}</span>
+                            <img src={item.image} alt={item.name} className="cart-item-image" /> {/* Use item.image */}
+                            <span className="cart-item-name">{item.name} - ₹{item.price}</span>
                             <div className="button-group">
                                 <button onClick={() => removeItemFromCart(index)} className="remove-item-btn">Remove</button>
                                 <button onClick={() => handleBuyClick(item)} className="buy-item-btn">Buy</button>

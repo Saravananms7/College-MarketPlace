@@ -77,7 +77,7 @@ const Buy = ({ addToCart, setSellingProducts }) => {
                 });
 
                 // Log purchase
-                console.log(`Purchased: ${selectedProduct.name} for $${selectedProduct.price}`);
+                console.log(`Purchased: ${selectedProduct.name} for ₹${selectedProduct.price}`);
                 setSellingProducts(prev => prev.map(prod => 
                     prod._id === selectedProduct._id ? { ...prod, status: 'Sold' } : prod
                 ));
@@ -123,7 +123,7 @@ const Buy = ({ addToCart, setSellingProducts }) => {
                                 <div key={product._id} className="product-card">
                                     <img src={product.image} alt={product.name} className="product-image" />
                                     <h3 className="product-name">{product.name}</h3>
-                                    <p className="product-price">Price: ${product.price}</p>
+                                    <p className="product-price">Price: ₹{product.price}</p> {/* Change to Rupees */}
                                     <p className="product-description">{product.description}</p>
                                     <p className="product-contact">Contact: {product.contactNumber}</p>
                                     <div className="button-group">
@@ -143,7 +143,7 @@ const Buy = ({ addToCart, setSellingProducts }) => {
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <h3>Confirm Purchase</h3>
-                        <p>Are you sure you want to buy <strong>{selectedProduct?.name}</strong> for ${selectedProduct?.price}?</p>
+                        <p>Are you sure you want to buy <strong>{selectedProduct?.name}</strong> for ₹{selectedProduct?.price}?</p> {/* Change to Rupees */}
                         <button onClick={closeModal} className="modal-button">Cancel</button>
                         <button onClick={handleConfirmPurchase} className="modal-button">Confirm</button>
                     </div>
