@@ -59,7 +59,7 @@ const Status = () => {
                         <div className="product-details">
                             <span className="product-name">{product.name}</span>
                             <span className="product-description">{product.description}</span>
-                            <span className="product-price">Price: ${product.price}</span>
+                            <span className="product-price">Price: ₹{product.price}</span>
                         </div>
                         <div className="status-action">
                             <span className={`product-status ${product.status.toLowerCase()}`}>
