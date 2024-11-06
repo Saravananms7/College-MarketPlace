@@ -118,10 +118,10 @@ const Sell = ({ sellingProducts, setSellingProducts }) => {
                     required
                 >
                     <option value="">Select a category</option>
-                    <option value="books">Books</option>
-                    <option value="electronics">Electronics</option>
-                    <option value="clothing">Clothing</option>
-                    <option value="other">Other</option>
+                    <option value="Books">Books</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Other">Other</option>
                 </select>
                 <input
                     type="number"

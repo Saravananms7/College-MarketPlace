@@ -3,12 +3,12 @@
     max-width: 600px; /* Adjust this value to reduce the size of the box */
     margin: 0 auto; /* Center the box */
     padding: 2rem; /* Add some padding */
-    background-color: #c62828; /* Lighter red base color */
+    background-color:  rgba(204, 18, 40, 0.625); /* Lighter red base color */
     border-radius: 15px; /* Increased rounding for a smoother look */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* Deeper shadow for more depth */
+    box-shadow: 0 4px 20px rgba(216, 3, 3, 0.893); /* Deeper shadow for more depth */
     text-align: left;
     transition: transform 0.3s, box-shadow 0.3s; /* Animation on hover */
-    color: white; /* Change text color to white for better readability */
+    color: rgb(255, 255, 255); /* Change text color to white for better readability */
 }
 
 /* Hover effect for the sell section */
@@ -35,7 +35,7 @@ input:focus, textarea:focus {
 
 /* Button styles for forms */
 button[type="submit"] {
-    background-color: #c62828; /* Primary button color matching the main color */
+    background-color: #28a745; /* Primary button color matching the main color */
     color: white; /* Text color */
     border: none; /* No border */
     padding: 0.75rem; /* Inner padding */
