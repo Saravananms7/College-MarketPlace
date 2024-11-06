@@ -5,13 +5,11 @@ import { useAuth } from '../AuthContext';
 const Sell = ({ sellingProducts, setSellingProducts }) => {
     const { sellerId } = useAuth();
 
-    console.log("sellerId in Sell component:", sellerId);
-
     const [sellData, setSellData] = useState({
         productName: '',
         category: '',
         price: '',
-        image: '',
+        image: null,
         description: '',
         contactNumber: ''
     });
@@ -23,27 +21,20 @@ const Sell = ({ sellingProducts, setSellingProducts }) => {
 
     useEffect(() => {
         return () => {
-            if (previewImage) {
-                URL.revokeObjectURL(previewImage);
-            }
+            if (previewImage) URL.revokeObjectURL(previewImage);
         };
     }, [previewImage]);
 
     const handleSellChange = (e) => {
         const { name, value } = e.target;
-        setSellData({ ...sellData, [name]: value });
-
-        if (name === 'image' && value) {
-            setPreviewImage(value);
-        }
+        setSellData((prevData) => ({ ...prevData, [name]: value }));
     };
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setSellData({ ...sellData, image: file });
-            setPreviewImage(imageUrl);
+            setSellData((prevData) => ({ ...prevData, image: file }));
+            setPreviewImage(URL.createObjectURL(file));
         }
     };
 
@@ -53,69 +44,58 @@ const Sell = ({ sellingProducts, setSellingProducts }) => {
         setError(null);
         setSuccess(null);
     
-        if (!sellerId) {
-            setError('You must be logged in to sell products.');
-            setLoading(false);
-            return;
+        const formData = new FormData();
+        formData.append('name', sellData.productName);
+        formData.append('category', sellData.category);
+        formData.append('price', parseFloat(sellData.price) || 0);
+        formData.append('description', sellData.description);
+        formData.append('contactNumber', sellData.contactNumber);
+        formData.append('seller', sellerId);
+        if (sellData.image) {
+            formData.append('image', sellData.image);
         }
     
         try {
-            const priceValue = parseFloat(sellData.price);
-            if (isNaN(priceValue) || priceValue <= 0) {
-                setError('Price must be a positive number.');
-                return;
-            }
-    
-            const formData = new FormData();
-            formData.append('name', sellData.productName);
-            formData.append('category', sellData.category);
-            formData.append('price', priceValue);
-            
-            // Append image only if it exists
-            if (sellData.image instanceof File) {
-                formData.append('image', sellData.image);
-            }
-    
-            formData.append('description', sellData.description);
-            formData.append('contactNumber', sellData.contactNumber);
-            formData.append('seller', sellerId);
-
-            // Log the formData
-            for (let [key, value] of formData.entries()) {
-                console.log(key, value);
-            }
-
             const response = await fetch('http://localhost:5000/api/products', {
                 method: 'POST',
                 body: formData,
             });
     
             if (!response.ok) {
-                throw new Error('Product creation failed');
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Product creation failed');
             }
     
             const newProduct = await response.json();
-            setSellingProducts([...sellingProducts, { ...newProduct, status: 'Available' }]);
-            setSuccess('Product added successfully!');
+            
+            // Prepend 'http://localhost:5000' to the image URL if present
+            const imageUrl = newProduct.image
+                ? `http://localhost:5000${newProduct.image}` // Add base URL here
+                : null;
     
+            // Update the selling products list with the correct image URL
+            setSellingProducts((prevProducts) => [
+                ...prevProducts,
+                { ...newProduct, image: imageUrl, status: 'Available' },
+            ]);
+    
+            setSuccess('Product added successfully!');
             setSellData({
                 productName: '',
                 category: '',
                 price: '',
-                image: '',
+                image: null,
                 description: '',
-                contactNumber: ''
+                contactNumber: '',
             });
             setPreviewImage(null);
-    
-            setTimeout(() => setSuccess(null), 3000);
         } catch (error) {
-            console.error('Error adding product:', error);
             setError(error.message || 'An error occurred while adding the product.');
         } finally {
             setLoading(false);
         }
     };
+    
 
     return (
         <div className="sell-section">
