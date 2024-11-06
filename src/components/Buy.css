@@ -168,3 +168,11 @@ html {
     color: red;
     text-align: center;
 }
+.success-message {
+    background-color: #28a745;
+    color: white;
+    padding: 1rem;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 2rem;
+}

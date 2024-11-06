@@ -10,6 +10,7 @@ const Buy = ({ addToCart, setSellingProducts }) => {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(null); // State for success message
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -66,12 +67,19 @@ const Buy = ({ addToCart, setSellingProducts }) => {
             try {
                 await fetch(`http://localhost:5000/api/products/${selectedProduct._id}/sell`, { method: 'PUT' });
                 console.log(`Purchased: ${selectedProduct.name} for ₹${selectedProduct.price}`);
-                setSellingProducts((prev) => 
-                    prev.map((prod) => 
+
+                setSellingProducts((prev) =>
+                    prev.map((prod) =>
                         prod._id === selectedProduct._id ? { ...prod, status: 'Sold' } : prod
                     )
                 );
+
+                // Close modal immediately after confirming
                 closeModal();
+
+                // Set success message
+                setSuccessMessage(`Successfully purchased ${selectedProduct.name} for ₹${selectedProduct.price}`);
+                setTimeout(() => setSuccessMessage(null), 3000); // Remove the success message after 3 seconds
             } catch (error) {
                 console.error('Error confirming purchase:', error);
             }
@@ -129,13 +137,23 @@ const Buy = ({ addToCart, setSellingProducts }) => {
                 <p>No products found matching your search.</p>
             )}
 
+            {/* Success Message */}
+            {successMessage && (
+                <div className="success-message">
+                    <p>{successMessage}</p>
+                </div>
+            )}
+
+            {/* Modal */}
             {showModal && (
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <h3>Confirm Purchase</h3>
                         <p>Are you sure you want to buy <strong>{selectedProduct?.name}</strong> for ₹{selectedProduct?.price}?</p>
-                        <button onClick={closeModal} className="modal-button">Cancel</button>
-                        <button onClick={handleConfirmPurchase} className="modal-button">Confirm</button>
+                        <div className="button-group">
+                            <button onClick={closeModal} className="modal-button">Cancel</button>
+                            <button onClick={handleConfirmPurchase} className="modal-button">Confirm</button>
+                        </div>
                     </div>
                 </div>
             )}
