@@ -2,8 +2,7 @@
     font-family: 'Poppins', sans-serif;
     min-height: 100vh;
     padding: 2rem;
-    background-image: url('https://example.com/bokeh-background.jpg');
-    background-size: cover;
+    background-color: #f9f9f9;
 }
 
 .search-bar {
@@ -123,56 +122,53 @@
     background-color: #0056b3;
 }
 
-html {
-    scroll-behavior: smooth;
-}
-
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 999;
 }
 
 .modal-content {
-    background-color: white;
+    background: white;
     padding: 2rem;
     border-radius: 10px;
-    max-width: 90%;
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 500px;
 }
 
 .modal-button {
-    background-color: #007bff;
+    background: #007bff;
     color: white;
+    padding: 0.6rem 1.2rem;
     border: none;
-    padding: 0.5rem 1rem;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
     margin-top: 1rem;
+    transition: background-color 0.3s;
 }
 
 .modal-button:hover {
     background-color: #0056b3;
 }
 
-.error {
-    color: red;
-    text-align: center;
-}
 .success-message {
-    background-color: #28a745;
-    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background-color: #d4edda;
+    color: #155724;
     padding: 1rem;
-    border-radius: 5px;
+    margin: 20px 0;
+    border: 2px solid #c3e6cb;
+    border-radius: 10px;
     text-align: center;
-    margin-top: 2rem;
 }
+
+

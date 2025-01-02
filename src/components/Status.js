@@ -7,7 +7,7 @@ const Status = () => {
     const [sellingProducts, setSellingProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    // Status.js
     useEffect(() => {
         const fetchSellingProducts = async () => {
             try {

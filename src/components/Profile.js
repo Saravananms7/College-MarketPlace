@@ -17,7 +17,7 @@ const Profile = () => {
 
     // Default avatar image
     const defaultAvatar = 'https://m.media-amazon.com/images/I/41jLBhDISxL.jpg';
-
+    // Profile.js
     useEffect(() => {
         const fetchProfileData = async () => {
             const token = localStorage.getItem('token');

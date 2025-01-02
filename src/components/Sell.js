@@ -37,7 +37,7 @@ const Sell = ({ sellingProducts, setSellingProducts }) => {
             setPreviewImage(URL.createObjectURL(file));
         }
     };
-
+    // Sell.js
     const handleSellSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);

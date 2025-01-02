@@ -10,7 +10,6 @@ const Buy = ({ addToCart, setSellingProducts }) => {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [successMessage, setSuccessMessage] = useState(null); // State for success message
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -33,13 +32,8 @@ const Buy = ({ addToCart, setSellingProducts }) => {
     const categorizeProducts = (products) => {
         return products.reduce((categories, product) => {
             const { category } = product;
-            if (!category) {
-                if (!categories['Other']) categories['Other'] = [];
-                categories['Other'].push(product);
-            } else {
-                if (!categories[category]) categories[category] = [];
-                categories[category].push(product);
-            }
+            if (!categories[category]) categories[category] = [];
+            categories[category].push(product);
             return categories;
         }, {});
     };
@@ -64,22 +58,23 @@ const Buy = ({ addToCart, setSellingProducts }) => {
 
     const handleConfirmPurchase = async () => {
         if (selectedProduct) {
+            closeModal();
             try {
                 await fetch(`http://localhost:5000/api/products/${selectedProduct._id}/sell`, { method: 'PUT' });
-                console.log(`Purchased: ${selectedProduct.name} for ₹${selectedProduct.price}`);
+
+                setProducts((prev) =>
+                    prev.map((prod) =>
+                        prod._id === selectedProduct._id
+                            ? { ...prod, status: 'Sold', successMessage: `Successfully purchased ${prod.name} for ₹${prod.price}` }
+                            : prod
+                    )
+                );
 
                 setSellingProducts((prev) =>
                     prev.map((prod) =>
                         prod._id === selectedProduct._id ? { ...prod, status: 'Sold' } : prod
                     )
                 );
-
-                // Close modal immediately after confirming
-                closeModal();
-
-                // Set success message
-                setSuccessMessage(`Successfully purchased ${selectedProduct.name} for ₹${selectedProduct.price}`);
-                setTimeout(() => setSuccessMessage(null), 3000); // Remove the success message after 3 seconds
             } catch (error) {
                 console.error('Error confirming purchase:', error);
             }
@@ -119,15 +114,19 @@ const Buy = ({ addToCart, setSellingProducts }) => {
                         <div className="product-grid">
                             {categorizedProducts[category].map((product) => (
                                 <div key={product._id} className="product-card">
-                                    <img src={product.image} alt={product.name} className="product-image" />
+                                    <img src={`http://localhost:5000${product.image}`} alt={product.name} className="product-image" />
                                     <h3 className="product-name">{product.name}</h3>
                                     <p className="product-price">Price: ₹{product.price}</p>
                                     <p className="product-description">{product.description}</p>
                                     <p className="product-contact">Contact: {product.contactNumber}</p>
-                                    <div className="button-group">
-                                        <button onClick={() => addToCart(product)} className="add-to-cart-button">Add to Cart</button>
-                                        <button onClick={() => handleBuyClick(product)} className="buy-button">Buy</button>
-                                    </div>
+                                    {product.status === 'Sold' ? (
+                                        <p className="success-message">{product.successMessage}</p>
+                                    ) : (
+                                        <div className="button-group">
+                                            <button onClick={() => addToCart(product)} className="add-to-cart-button">Add to Cart</button>
+                                            <button onClick={() => handleBuyClick(product)} className="buy-button">Buy</button>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -137,14 +136,6 @@ const Buy = ({ addToCart, setSellingProducts }) => {
                 <p>No products found matching your search.</p>
             )}
 
-            {/* Success Message */}
-            {successMessage && (
-                <div className="success-message">
-                    <p>{successMessage}</p>
-                </div>
-            )}
-
-            {/* Modal */}
             {showModal && (
                 <div className="modal-overlay">
                     <div className="modal-content">
