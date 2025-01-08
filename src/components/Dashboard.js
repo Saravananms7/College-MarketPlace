@@ -1,4 +1,6 @@
+// Frontend: Dashboard.js
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import Buy from './Buy';
 import Sell from './Sell';
@@ -23,9 +25,29 @@ const Dashboard = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
+    const navigate = useNavigate();
+
     const products = [
         // Product details here
     ];
+    const handleLogout = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            await fetch('http://localhost:5000/auth/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            // Clear token and navigate to login page
+            localStorage.removeItem('token');
+            navigate('/login');
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    };
 
     const addToCart = (product) => {
         const itemToAdd = {
@@ -71,6 +93,9 @@ const Dashboard = () => {
             {/* Logo Section */}
             <div className="logo-container">
                 <img src={logo} alt="Logo" className="logo" />
+                <button className="logout-button" onClick={handleLogout}>
+                    Logout
+                </button>
             </div>
 
             {/* Navigation Bar */}

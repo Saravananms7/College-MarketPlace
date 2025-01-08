@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Cart.css';
 
-const Cart = ({ cartItems, clearCart, removeItemFromCart, setSellingProducts }) => {
+const Cart = ({ cartItems = [], clearCart, removeItemFromCart, setSellingProducts }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [showModal, setShowModal] = useState(false);
 

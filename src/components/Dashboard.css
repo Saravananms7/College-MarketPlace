@@ -214,3 +214,33 @@ button[type="submit"]:hover {
     max-width: 120px;
     height: auto;
 }
+/* Logout button styling */
+.logout-button {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    background: linear-gradient(45deg, #de1f18, #781a07); /* Cool gradient tones */
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem; /* Comfortable padding */
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 30px; /* Sleek rounded corners */
+    box-shadow: 0 4px 10px rgba(228, 9, 9, 0.2); /* Subtle shadow for depth */
+    cursor: pointer;
+    transition: all 0.3s ease; /* Smooth hover effects */
+}
+
+/* Hover effect for the logout button */
+.logout-button:hover {
+    background: linear-gradient(45deg, #ef530a, #dd3e0a); /* Slightly darker tones on hover */
+    transform: translateY(-2px) scale(1.08); /* Lift effect with slight enlargement */
+    box-shadow: 0 6px 15px rgba(198, 13, 13, 0.3); /* Enhanced shadow on hover */
+    letter-spacing: 0.5px; /* Slight letter spacing for effect */
+}
+
+/* Active state for logout button */
+.logout-button:active {
+    transform: scale(0.98); /* Slight press-in effect */
+    box-shadow: 0 2px 8px rgba(211, 14, 14, 0.741); /* Reduced shadow on click */
+}
